@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="https://pixijs.download/release/pixi.min.js"></script>
+  </head>
+  <body>
+    <!-- <script type="module">
+      // Create the application helper and add its render target to the page
+      const app = new PIXI.Application();
+      await app.init({ width: 800, height: 800 });
+      document.body.appendChild(app.canvas);
+
+      // Create the sprite and add it to the stage
+      let circle = new PIXI.Graphics()
+        .circle(400, 400, 3)
+        .fill('red');
+    //   await PIXI.Assets.load('sample.png');
+    //   let sprite = PIXI.Sprite.from('sample.png');
+    //   app.stage.addChild(sprite);
+      app.stage.addChild(circle);
+
+      // Add a ticker callback to move the sprite back and forth
+      let elapsed = 0.0;
+      app.ticker.add((ticker) => {
+        elapsed += ticker.deltaTime;
+        // sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.00;
+        circle.x = 100.0 + Math.cos(elapsed/50.0) * 100.00;
+      });
+    </script> -->
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
