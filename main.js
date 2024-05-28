@@ -1,3 +1,205 @@
+class Boid {
+  static count = 0;
+  static instances = [];
+
+  constructor({
+    visible_range,
+    protected_range,
+    min_speed,
+    max_speed,
+    x,
+    y,
+    vx,
+    vy,
+    avoid_factor,
+    matching_factor,
+    centering_factor,
+    maxbias,
+    bias_incremen,
+    biasval
+  }
+  ) {
+    this.visible_range = visible_range;
+    this.protected_range = protected_range;
+    this.min_speed = min_speed;
+    this.max_speed = max_speed;
+    this.x = x;
+    this.y = y;
+    this.vx = vx;
+    this.vy = vy;
+    this.avoid_factor = avoid_factor;
+    this.matching_factor = matching_factor;
+    this.centering_factor = centering_factor;
+    this.boid_index = Boid.count;
+    this.boid_graphics = new PIXI.Graphics().circle(x, y, 3).fill('red');
+    Boid.count++;
+    Boid.instances.push(this);
+    this.maxbias = maxbias;
+    this.bias_incremen = bias_incremen;
+    this.biasval = biasval;
+  }
+
+  static getCount() {
+    return Boid.count;
+  }
+
+  stage_boid_graphis(app) {
+    // debugger;
+    app.stage.addChild(this.boid_graphics);
+    // let new_boid_graphis = new PIXI.Graphics().circle(this.x, this.y, 3).fill('red');
+    // app.stage.addChild(new_boid_graphis);
+    // this.boid_graphics = new_boid_graphis;
+  }
+
+  get_distance_distance_between_boids(other_boid) {
+    // √((x2 – x1)² + (y2 – y1)²)
+    return Math.sqrt(
+      Math.pow(this.x - other_boid.x) + Math.pow(this.y - other_boid.y)
+    );
+  }
+
+  is_in_protected_range(other_boid) {
+    let distance_between_boids =
+      this.get_distance_distance_between_boids(other_boid);
+    if (distance_between_boids < this.protected_range) {
+      return true;
+    }
+    return false;
+  }
+
+  is_in_visual_range(other_boid) {
+    let distance_between_boids =
+      this.get_distance_distance_between_boids(other_boid);
+    if (distance_between_boids < this.visible_range) {
+      return true;
+    }
+    return false;
+  }
+
+  // Separation relative to coliding neighbors
+  get_separation_vector(other_boids) {
+    let close_x = 0;
+    let close_y = 0;
+    other_boids.forEach((other_boid) => {
+      if (this.is_in_visual_range(other_boid)) {
+        close_x += this.x - other_boid.x;
+        close_y += this.y - other_boid.y;
+      }
+    });
+
+    return { close_x, close_y };
+  }
+
+  update_velocity_to_avoid(other_boids) {
+    const { close_x, close_y } = this.get_separation_vector(other_boids);
+    // scaling the Separation vector by avoid_factor
+    this.vx += close_x * this.avoid_factor;
+    this.vy += close_y * this.avoid_factor;
+  }
+
+  // Alignment relative to visible neighbors
+  get_avg_velocity_of_folk(other_boids) {
+    // debug to see if it is correct
+    let xvel_avg = this.vx;
+    let yvel_avg = this.vy;
+    let neighboring_boids = 1;
+    other_boids.forEach((other_boid) => {
+      if (this.is_in_visual_range(other_boid)) {
+        xvel_avg += other_boid.vx;
+        yvel_avg += other_boid.vy;
+        neighboring_boids++;
+      }
+    });
+    if (neighboring_boids) {
+      xvel_avg /= neighboring_boids;
+      yvel_avg /= neighboring_boids;
+    }
+    return { xvel_avg, yvel_avg };
+  }
+
+  update_velocity_to_align(other_boids) {
+    const { xvel_avg, yvel_avg } = this.get_avg_velocity_of_folk(other_boids);
+    this.vx += (xvel_avg - this.vx) * this.matching_factor;
+    this.vy += (yvel_avg - this.vy) * this.matching_factor;
+  }
+
+  // Cohesion relative to visible neighbors
+  get_position_of_center_of_mass(other_boids) {
+    // debug to see if it is correct
+    let xpos_avg = this.x;
+    let ypos_avg = this.y;
+    let neighboring_boids = 1;
+    other_boids.forEach((other_boid) => {
+      if (this.is_in_visual_range(other_boid)) {
+        xpos_avg += other_boid.x;
+        ypos_avg += other_boid.y;
+        neighboring_boids++;
+      }
+    });
+    if (neighboring_boids) {
+      xpos_avg /= neighboring_boids;
+      ypos_avg /= neighboring_boids;
+    }
+    return { xpos_avg, ypos_avg };
+  }
+
+  update_velocity_for_cohesion(other_boids) {
+    const { xpos_avg, ypos_avg } =
+      this.get_position_of_center_of_mass(other_boids);
+    this.vx += (xpos_avg - this.x) * this.centering_factor;
+    this.vy += (ypos_avg - this.y) * this.centering_factor;
+  }
+
+  update_velocity_to_maintain_screen_edge(
+    left_margin,
+    right_margin,
+    top_margin,
+    bottom_margin,
+    turn_factor
+  ) {
+    debugger;
+    if (this.x < left_margin) this.vx += turn_factor;
+    if (this.x > right_margin) this.vx -= turn_factor;
+    if (this.y > bottom_margin) this.vy -= turn_factor;
+    if (this.y < top_margin) this.vy += turn_factor;
+  }
+
+  limit_boid_speed() {
+    const speed = Math.sqrt(Math.pow(this.vx, 2) + Math.pow(this.vy, 2));
+    if (speed > this.max_speed) {
+      this.vx = (this.vx / speed) * this.max_speed;
+      this.vy = (this.vy / speed) * this.min_speed;
+    } else if (speed < this.min_speed) {
+      this.vx = (this.vx / speed) * this.min_speed;
+      this.vy = (this.vy / speed) * this.max_speed;
+    }
+  }
+
+  update_position() {
+    const other_boids = this.get_all_other_boids();
+    this.update_velocity_for_cohesion(other_boids);
+    this.update_velocity_to_align(other_boids);
+    this.update_velocity_to_avoid(other_boids);
+    this.limit_boid_speed();
+    debugger;
+    // this.vx += (this.biasval * this.bias_incremen);
+    // this.vy += (this.biasval * this.bias_incremen);
+    this.x += this.vx;
+    this.y += this.vy;
+  }
+
+  update_boid_graphis_position()
+  {
+    debugger;
+    this.boid_graphics.x = this.x;
+    this.boid_graphics.y = this.y;
+  }
+
+  get_all_other_boids() {
+    return Boid.instances.filter(boid => boid !== this);
+  }
+}
+
 (async () =>
 {
     // Create a new application
@@ -8,20 +210,46 @@
 
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
-    let boids = [];
-    let boid;
-    for (let i=0; i < 5; i++) {
-        boid = new PIXI.Graphics().circle(400, 400, 3)
-        .fill('red');
-        boids.push(boid);
+    // let boids = [];
+    // let boid;
+    // for (let i=0; i < 5; i++) {
+    //     boid = new PIXI.Graphics().circle(400, 400, 3)
+    //     .fill('red');
+    //     boids.push(boid);
+    // }
+    // app.stage.addChild(...boids);
+    for (let i=0; i < 300; i++) {
+      let boid = new Boid({
+        visible_range : 80,
+        protected_range : 300,
+        min_speed : 3,
+        max_speed : 6,
+        x : window.innerWidth/2 + (50 + Math.random() * (50 - 3)) * Math.floor((Math.random() * 3) - 1),
+        y : window.innerHeight/2 + (50 + Math.random() * (50 - 3)) * Math.floor((Math.random() * 3) - 1),
+        vx : 3,
+        vy : 3,
+        avoid_factor : 0.0005,
+        matching_factor : 0.05,
+        centering_factor : 0.05,
+        maxbias: 0.01,
+        bias_incremen:  0.00004,
+        biasval: Math.floor((Math.random() * 3) - 1),
+      }
+      )
+      boid.stage_boid_graphis(app);
     }
-    app.stage.addChild(...boids);
-    let elapsed = 0.0;
     app.ticker.add((ticker) => {
-      elapsed += ticker.deltaTime;
-      // sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.00;
-      for (let i=0; i < 5; i++) {
-        boids[i].x = Math.floor(Math.random() * 100.0) + 100  + Math.cos(elapsed/50.0) * 100.00;
-       }
+      Boid.instances.forEach(boid => {
+        boid.update_position();
+        boid.update_velocity_to_maintain_screen_edge(
+          90,
+          1250,
+          150,
+          500,
+          .085
+        )
+        boid.boid_graphics.x += boid.vx;
+        boid.boid_graphics.y += boid.vy;
+      })
     });
 })();
