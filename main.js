@@ -18,7 +18,7 @@ import {Boid} from "./boid.js";
     //     boids.push(boid);
     // }
     // app.stage.addChild(...boids);
-    for (let i=0; i < 100; i++) {
+    for (let i=0; i < 1; i++) {
       let boid = new Boid({
         visible_range : 40,
         protected_range : 8,
@@ -36,7 +36,6 @@ import {Boid} from "./boid.js";
         top_margin: 100,
         bottom_margin: 650,
         turn_factor: .2,
-        maxbias: 0.01,
         bias_val: 0.001,
       }
       )

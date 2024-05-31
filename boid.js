@@ -19,7 +19,6 @@ export class Boid {
     top_margin,
     bottom_margin,
     turn_factor,
-    maxbias,
     bias_val
   }
   ) {
@@ -43,7 +42,6 @@ export class Boid {
     this.boid_graphics = new PIXI.Graphics().circle(x, y, 1.5).fill('red');
     Boid.count++;
     Boid.instances.push(this);
-    this.maxbias = maxbias;
     this.bias_val = bias_val * (Math.random() < 0.5 ? 1 : -1);
   }
 
