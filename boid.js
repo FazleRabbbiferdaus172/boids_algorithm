@@ -40,6 +40,8 @@ export class Boid {
     this.turn_factor = turn_factor,
     this.boid_index = Boid.count;
     this.boid_graphics = new PIXI.Graphics().circle(x, y, 1.5).fill('red');
+    this.boid_path_list = [[0,0], [0,0], [0, 0], [0, 0], [0,0], [0,0], [0,0], [0,0], [0,0]];
+    this.boid_path_graphics = [];
     Boid.count++;
     Boid.instances.push(this);
     this.bias_val = bias_val * (Math.random() < 0.5 ? 1 : -1);
@@ -52,6 +54,12 @@ export class Boid {
   stage_boid_graphis(app) {
     // debugger;
     app.stage.addChild(this.boid_graphics);
+    let size = 0.1
+    for (const path in this.boid_path_list) {
+      this.boid_path_graphics.push(new PIXI.Graphics().circle(this.x, this.y, size).fill('red'));
+      size += 0.1
+    }
+    app.stage.addChild(...this.boid_path_graphics);
     // let new_boid_graphis = new PIXI.Graphics().circle(this.x, this.y, 3).fill('red');
     // app.stage.addChild(new_boid_graphis);
     // this.boid_graphics = new_boid_graphis;
@@ -158,7 +166,7 @@ export class Boid {
 
   update_velocity_to_maintain_screen_edge(
   ) {
-    debugger;
+    // debugger;
     if (this.x < this.left_margin) this.vx += this.turn_factor;
     if (this.x > this.right_margin) this.vx -= this.turn_factor;
     if (this.y > this.bottom_margin) this.vy -= this.turn_factor;
@@ -188,14 +196,16 @@ export class Boid {
     this.update_velocity_to_maintain_screen_edge();
     this.update_velocity_to_bias_direction()
     this.limit_boid_speed();
-    debugger;
+    // debugger;
     this.x += this.vx;
     this.y += this.vy;
+    this.boid_path_list.shift();
+    this.boid_path_list.push([this.vx, this.vy]);
   }
 
   update_boid_graphis_position()
   {
-    debugger;
+    // debugger;
     this.boid_graphics.x = this.x;
     this.boid_graphics.y = this.y;
   }

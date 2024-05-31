@@ -18,7 +18,7 @@ import {Boid} from "./boid.js";
     //     boids.push(boid);
     // }
     // app.stage.addChild(...boids);
-    for (let i=0; i < 1; i++) {
+    for (let i=0; i < 300; i++) {
       let boid = new Boid({
         visible_range : 40,
         protected_range : 8,
@@ -46,6 +46,12 @@ import {Boid} from "./boid.js";
         boid.update_position();
         boid.boid_graphics.x += boid.vx;
         boid.boid_graphics.y += boid.vy;
+        for (let i=0; i < 9; i++) {
+          debugger;
+          boid.boid_path_graphics[i].x += boid.boid_path_list[i][0];
+          boid.boid_path_graphics[i].y += boid.boid_path_list[i][1];
+        }
+        debugger;
       })
     });
 })();
