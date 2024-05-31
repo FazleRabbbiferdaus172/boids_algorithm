@@ -14,6 +14,11 @@ export class Boid {
     avoid_factor,
     matching_factor,
     centering_factor,
+    left_margin,
+    right_margin,
+    top_margin,
+    bottom_margin,
+    turn_factor,
     maxbias,
     bias_incremen,
     biasval
@@ -30,6 +35,11 @@ export class Boid {
     this.avoid_factor = avoid_factor;
     this.matching_factor = matching_factor;
     this.centering_factor = centering_factor;
+    this.left_margin = left_margin,
+    this.right_margin = right_margin,
+    this.top_margin = top_margin,
+    this.bottom_margin = bottom_margin,
+    this.turn_factor = turn_factor,
     this.boid_index = Boid.count;
     this.boid_graphics = new PIXI.Graphics().circle(x, y, 3).fill('red');
     Boid.count++;
@@ -151,27 +161,22 @@ export class Boid {
   }
 
   update_velocity_to_maintain_screen_edge(
-    left_margin,
-    right_margin,
-    top_margin,
-    bottom_margin,
-    turn_factor
   ) {
     debugger;
-    if (this.x < left_margin) this.vx += turn_factor;
-    if (this.x > right_margin) this.vx -= turn_factor;
-    if (this.y > bottom_margin) this.vy -= turn_factor;
-    if (this.y < top_margin) this.vy += turn_factor;
+    if (this.x < this.left_margin) this.vx += this.turn_factor;
+    if (this.x > this.right_margin) this.vx -= this.turn_factor;
+    if (this.y > this.bottom_margin) this.vy -= this.turn_factor;
+    if (this.y < this.top_margin) this.vy += this.turn_factor;
   }
 
   limit_boid_speed() {
     const speed = Math.sqrt(Math.pow(this.vx, 2) + Math.pow(this.vy, 2));
     if (speed > this.max_speed) {
       this.vx = (this.vx / speed) * this.max_speed;
-      this.vy = (this.vy / speed) * this.min_speed;
+      this.vy = (this.vy / speed) * this.max_speed;
     } else if (speed < this.min_speed) {
       this.vx = (this.vx / speed) * this.min_speed;
-      this.vy = (this.vy / speed) * this.max_speed;
+      this.vy = (this.vy / speed) * this.min_speed;
     }
   }
 
