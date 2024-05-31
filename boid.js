@@ -91,7 +91,7 @@ export class Boid {
     let close_x = 0;
     let close_y = 0;
     other_boids.forEach((other_boid) => {
-      if (this.is_in_visual_range(other_boid)) {
+      if (this.is_in_protected_range(other_boid)) {
         close_x += this.x - other_boid.x;
         close_y += this.y - other_boid.y;
       }
