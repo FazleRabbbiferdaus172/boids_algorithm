@@ -20,8 +20,7 @@ export class Boid {
     bottom_margin,
     turn_factor,
     maxbias,
-    bias_incremen,
-    biasval
+    bias_val
   }
   ) {
     this.visible_range = visible_range;
@@ -41,12 +40,11 @@ export class Boid {
     this.bottom_margin = bottom_margin,
     this.turn_factor = turn_factor,
     this.boid_index = Boid.count;
-    this.boid_graphics = new PIXI.Graphics().circle(x, y, 3).fill('red');
+    this.boid_graphics = new PIXI.Graphics().circle(x, y, 1.5).fill('red');
     Boid.count++;
     Boid.instances.push(this);
     this.maxbias = maxbias;
-    this.bias_incremen = bias_incremen;
-    this.biasval = biasval;
+    this.bias_val = bias_val * (Math.random() < 0.5 ? 1 : -1);
   }
 
   static getCount() {
@@ -180,15 +178,19 @@ export class Boid {
     }
   }
 
+  update_velocity_to_bias_direction() {
+    this.vx = (1 - Math.abs(this.bias_val))* this.vx + this.bias_val;
+  }
+
   update_position() {
     const other_boids = this.get_all_other_boids();
     this.update_velocity_for_cohesion(other_boids);
     this.update_velocity_to_align(other_boids);
     this.update_velocity_to_avoid(other_boids);
+    this.update_velocity_to_maintain_screen_edge();
+    this.update_velocity_to_bias_direction()
     this.limit_boid_speed();
     debugger;
-    // this.vx += (this.biasval * this.bias_incremen);
-    // this.vy += (this.biasval * this.bias_incremen);
     this.x += this.vx;
     this.y += this.vy;
   }

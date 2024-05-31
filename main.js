@@ -18,27 +18,26 @@ import {Boid} from "./boid.js";
     //     boids.push(boid);
     // }
     // app.stage.addChild(...boids);
-    for (let i=0; i < 500; i++) {
+    for (let i=0; i < 100; i++) {
       let boid = new Boid({
-        visible_range : 80,
-        protected_range : 15,
+        visible_range : 40,
+        protected_range : 8,
         min_speed : 1,
-        max_speed : 2.5,
-        x : 200,
-        y : 120,
-        vx : 1.2,
-        vy : 1.2,
-        avoid_factor : 0.0005,
+        max_speed : 3,
+        x : 450,
+        y : 255,
+        vx : 1.5,
+        vy : 1.5,
+        avoid_factor : 0.05,
         matching_factor : 0.05,
-        centering_factor : 0.05,
+        centering_factor : 0.003,
         left_margin: 200,
-        right_margin: 950,
-        top_margin: 120,
-        bottom_margin: 450,
-        turn_factor: .06,
+        right_margin: 1150,
+        top_margin: 100,
+        bottom_margin: 650,
+        turn_factor: .2,
         maxbias: 0.01,
-        bias_incremen:  0.00004,
-        biasval: Math.floor((Math.random() * 3) - 1),
+        bias_val: 0.001,
       }
       )
       boid.stage_boid_graphis(app);
@@ -46,7 +45,6 @@ import {Boid} from "./boid.js";
     app.ticker.add((ticker) => {
       Boid.instances.forEach(boid => {
         boid.update_position();
-        boid.update_velocity_to_maintain_screen_edge()
         boid.boid_graphics.x += boid.vx;
         boid.boid_graphics.y += boid.vy;
       })
