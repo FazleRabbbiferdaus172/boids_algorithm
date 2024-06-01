@@ -4,9 +4,15 @@ import {Boid} from "./boid.js";
 {
     // Create a new application
     const app = new PIXI.Application();
-
+    const container = document.getElementById('container');
+    const margin = {top: container.offsetTop + (container.offsetHeight * .3), 
+              bottom: container.offsetHeight - (container.offsetHeight * .3),
+              left: container.offsetLeft + (container.offsetWidth * .25),
+              rigt: container.offsetWidth - (container.offsetWidth * .25)
+    }
+    debugger;
     // Initialize the application
-    await app.init({ antialias: true, resizeTo: window });
+    await app.init({ resizeTo: container });
 
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
@@ -20,19 +26,19 @@ import {Boid} from "./boid.js";
         boid = new Boid({
           visible_range : 40,
           protected_range : 8,
-          min_speed : 1,
-          max_speed : 3,
+          min_speed : 3,
+          max_speed : 6,
           x : x,
           y : y,
-          vx : 1.5,
-          vy : 1.5,
+          vx : 4.5,
+          vy : 4.5,
           avoid_factor : 0.05,
           matching_factor : 0.05,
           centering_factor : 0.003,
-          left_margin: 200,
-          right_margin: 1150,
-          top_margin: 100,
-          bottom_margin: 650,
+          left_margin: margin.left,
+          right_margin: margin.rigt,
+          top_margin: margin.top,
+          bottom_margin: margin.bottom,
           turn_factor: .2,
           bias_val: 0.001,
           with_tail: false
