@@ -10,7 +10,6 @@ import {Boid} from "./boid.js";
               left: container.offsetLeft + (container.offsetWidth * .25),
               rigt: container.offsetWidth - (container.offsetWidth * .25)
     }
-    debugger;
     // Initialize the application
     await app.init({ resizeTo: container });
 

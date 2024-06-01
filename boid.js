@@ -94,7 +94,6 @@ export class Boid {
   }
 
   update_velocity_to_avoid(close_x, close_y) {
-    // const { close_x, close_y } = this.get_separation_vector(other_boids);
     // scaling the Separation vector by avoid_factor
     this.vx += close_x * this.avoid_factor;
     this.vy += close_y * this.avoid_factor;
@@ -185,13 +184,14 @@ export class Boid {
     this.limit_boid_speed();
     this.x += this.vx;
     this.y += this.vy;
-    this.boid_path_list.shift();
-    this.boid_path_list.push([this.vx, this.vy]);
+    if (this.with_tail) {
+      this.boid_path_list.shift();
+      this.boid_path_list.push([this.vx, this.vy]);
+    }
   }
 
   update_boid_graphis_position()
   {
-    // debugger;
     this.boid_graphics.x = this.x;
     this.boid_graphics.y = this.y;
   }
